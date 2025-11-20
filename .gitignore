@@ -7,6 +7,15 @@ __pycache__/
 # C extensions
 *.so
 
+# .Github
+.github/
+
+# Input files
+input/
+
+#  Output reports
+reports/
+
 # Distribution / packaging
 .Python
 build/

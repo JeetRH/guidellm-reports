@@ -1,15 +1,15 @@
 data:
   - extra_metadata:
-      platform: RHOAI
-      GPU: L40S
+      platform: 1xvllm
+      GPU: H100
       GPU_count: 1
     files:
-      - input/benchmarks_Nov18_llmd.json
-#   - extra_metadata:
-#       platform: llm-d
-#       GPU: L40S
-#       GPU_count: 1
-#     files:
-#       - input/benchmarks_Nov18_llmd.json
-# options:
-#   color: platform
+      - input/benchmark-1xvllm.json
+  - extra_metadata:
+      platform: 2xvllm
+      GPU: H100
+      GPU_count: 1
+    files:
+      - input/benchmark-2xvllm.json
+options:
+  color: platform
