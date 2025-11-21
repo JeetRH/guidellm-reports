@@ -13,3 +13,4 @@ data:
       - input/benchmark-2xvllm.json
 options:
   color: platform
+  axis_mode: concurrency
