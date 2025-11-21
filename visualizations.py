@@ -65,6 +65,74 @@ def create_throughput_chart(df: pd.DataFrame, color_col: str, axis_mode: str) ->
     return fig.to_html(include_plotlyjs='cdn', div_id="throughput-chart")
 
 
+def create_total_throughput_chart(df: pd.DataFrame, color_col: str, axis_mode: str) -> str:
+    """Create total tokens/sec vs concurrency/RPS chart.
+
+    Plots `mean_total_tokens_per_second` grouped by the configured color column.
+    """
+    if df.empty:
+        return "<p>No data available for total throughput</p>"
+
+    x_field = 'concurrency' if axis_mode == 'concurrency' else 'rps'
+    x_label = 'Concurrency' if axis_mode == 'concurrency' else 'RPS'
+
+    # Ensure grouping column exists; fall back to dataset_id if possible
+    if color_col not in df.columns:
+        if 'dataset_id' in df.columns:
+            df = df.copy()
+            df['__color_fallback__'] = df['dataset_id']
+            color_col = '__color_fallback__'
+        else:
+            return "<p>No grouping column available for total throughput</p>"
+
+    grouped_data = []
+    for group in sorted(df[color_col].unique()):
+        group_data = df[df[color_col] == group]
+        for x_val in sorted(group_data[x_field].dropna().unique()):
+            x_data = group_data[group_data[x_field] == x_val]
+            # Use mean_total_tokens_per_second (sum of prompt+output token throughput)
+            mean_total = x_data.get('mean_total_tokens_per_second')
+            if mean_total is None:
+                # Some datasets might only have output TPS; try to approximate if possible
+                # but prefer to return a clear message when the column is missing
+                return "<p>mean_total_tokens_per_second column not found in summary data</p>"
+            mean_val = x_data['mean_total_tokens_per_second'].mean()
+            grouped_data.append({
+                'x_value': x_val,
+                'throughput': mean_val,
+                'group': group,
+                'samples': len(x_data)
+            })
+
+    if not grouped_data:
+        return "<p>No valid total throughput data available</p>"
+
+    plot_df = pd.DataFrame(grouped_data)
+
+    fig = px.bar(
+        plot_df,
+        x='x_value',
+        y='throughput',
+        color='group',
+        title=f'Total Tokens/sec vs {x_label}',
+        labels={
+            'x_value': x_label,
+            'throughput': 'Total Tokens/sec',
+            'group': color_col.replace('_', ' ').title()
+        },
+        hover_data=['samples']
+    )
+
+    fig.update_layout(
+        template='plotly_white',
+        height=500,
+        font_family='monospace',
+        barmode='group'
+    )
+
+    return fig.to_html(include_plotlyjs='cdn', div_id="total-throughput-chart")
+
+
 def create_latency_chart(df: pd.DataFrame, metric_col: str, color_col: str, axis_mode: str, 
                         title: str, y_label: str) -> str:
     """Create a latency metric chart.

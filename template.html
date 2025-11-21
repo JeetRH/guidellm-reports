@@ -160,6 +160,7 @@
     <div class="tab-container">
         <div class="tab-header">
             <button class="tab-button active" onclick="openTab(event, 'throughput')">Throughput</button>
+            <button class="tab-button" onclick="openTab(event, 'total-throughput')">Total Tokens</button>
             <button class="tab-button" onclick="openTab(event, 'ttft')">TTFT</button>
             <button class="tab-button" onclick="openTab(event, 'itl')">ITL</button>
             <button class="tab-button" onclick="openTab(event, 'request-latency')">Request Latency</button>
@@ -177,6 +178,15 @@
                 <p>Higher is better. Measures how many tokens the system can generate per second.</p>
             </div>
             {{ throughput_chart }}
+        </div>
+
+        <!-- Total Throughput Tab -->
+        <div id="total-throughput" class="tab-content">
+            <div class="metric-description">
+                <h3>Total Tokens per Second</h3>
+                <p>Includes both prompt/input and output tokens per second. Useful to assess end-to-end token processing load.</p>
+            </div>
+            {{ total_throughput_chart }}
         </div>
         
         <!-- TTFT Tab with Subtabs -->

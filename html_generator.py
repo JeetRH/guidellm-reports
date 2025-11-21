@@ -84,8 +84,13 @@ def generate_all_charts(summary_df: pd.DataFrame, requests_df: pd.DataFrame,
         charts['throughput_chart'] = visualizations.create_throughput_chart(
             summary_df, color_col, axis_mode
         )
+        # Additional chart: total tokens/sec (prompt + output tokens per second)
+        charts['total_throughput_chart'] = visualizations.create_total_throughput_chart(
+            summary_df, color_col, axis_mode
+        )
     else:
         charts['throughput_chart'] = "<p>No summary data available for throughput analysis</p>"
+        charts['total_throughput_chart'] = "<p>No summary data available for total throughput analysis</p>"
     
     # TTFT charts (all subtabs)
     ttft_metrics = [
