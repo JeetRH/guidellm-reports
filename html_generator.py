@@ -108,6 +108,14 @@ def generate_all_charts(summary_df: pd.DataFrame, requests_df: pd.DataFrame,
             )
         else:
             charts[chart_key] = f"<p>No summary data available for {title}</p>"
+
+    # Combined TTFT line chart (Mean/Median/P95/P99) with platform dropdown
+    if not summary_df.empty:
+        charts['combined_ttft_chart'] = visualizations.create_combined_ttft_line_chart(
+            summary_df, color_col, axis_mode
+        )
+    else:
+        charts['combined_ttft_chart'] = "<p>No summary data available for combined TTFT chart</p>"
     
     # ITL charts (all subtabs)
     itl_metrics = [

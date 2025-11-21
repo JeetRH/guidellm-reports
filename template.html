@@ -169,6 +169,7 @@
             <button class="tab-button" onclick="openTab(event, 'ttft-deep-dive')">TTFT Deep Dive</button>
             <button class="tab-button" onclick="openTab(event, 'itl-deep-dive')">ITL Deep Dive</button>
             <button class="tab-button" onclick="openTab(event, 'scheduling')">Request Scheduling</button>
+            <button class="tab-button" onclick="openTab(event, 'combined-ttft')">TTFT Combined</button>
         </div>
         
         <!-- Throughput Tab -->
@@ -296,6 +297,15 @@
                 <p>Analysis of request timing patterns including start rates, completion rates, and TTFT timeline.</p>
             </div>
             {{ scheduling_chart }}
+        </div>
+        
+        <!-- Combined TTFT Tab -->
+        <div id="combined-ttft" class="tab-content">
+            <div class="metric-description">
+                <h3>Combined TTFT (Mean / Median / P95 / P99)</h3>
+                <p>Interactive line chart with a dropdown to select platform/group. Shows Mean, Median, P95 and P99 on the same axes for easy comparison.</p>
+            </div>
+            {{ combined_ttft_chart }}
         </div>
     </div>
     

@@ -1,6 +1,7 @@
 """Visualization module for generating plotly charts."""
 
 import plotly.express as px
+import plotly.graph_objects as go
 import pandas as pd
 from typing import Dict, Any, List, Optional, Tuple
 
@@ -291,6 +292,121 @@ def create_histogram_deep_dive(df: pd.DataFrame, metric_col: str, color_col: str
         html_parts.append(f'<div style="margin-bottom: 30px;">{chart_html}</div>')
     
     return '\n'.join(html_parts)
+
+
+def create_combined_ttft_line_chart(df: pd.DataFrame, color_col: str, axis_mode: str) -> str:
+    """Create a combined line chart showing TTFT Mean/Median/P95/P99.
+
+    - X axis: concurrency or RPS (depending on axis_mode)
+    - Lines: Mean, Median, P95, P99 for a selected platform (via dropdown).
+    - If multiple groups are present (by `color_col`) a dropdown will let the user
+      choose a single group or 'All' to show every group's lines.
+    Returns HTML string of the chart.
+    """
+    if df.empty:
+        return "<p>No summary data available for TTFT combined chart</p>"
+
+    # Ensure required columns exist
+    required = ['ttft_mean', 'ttft_median', 'ttft_p95', 'ttft_p99']
+    for col in required:
+        if col not in df.columns:
+            return f"<p>Required column '{col}' not found in summary data</p>"
+
+    x_field = 'concurrency' if axis_mode == 'concurrency' else 'rps'
+    x_label = 'Concurrency' if axis_mode == 'concurrency' else 'RPS'
+
+    # Ensure grouping column exists; fall back to dataset_id
+    if color_col not in df.columns:
+        if 'dataset_id' in df.columns:
+            df = df.copy()
+            df['__color_fallback__'] = df['dataset_id']
+            color_col = '__color_fallback__'
+        else:
+            # Single-series chart without grouping
+            df = df.copy()
+            df['__single_group__'] = 'all'
+            color_col = '__single_group__'
+
+    # X values (sorted)
+    x_vals = sorted(df[x_field].dropna().unique())
+
+    # Prepare traces: for each group, create four traces (mean, median, p95, p99)
+    groups = sorted(df[color_col].unique())
+    traces = []
+    trace_groups = []
+    metrics = [
+        ('ttft_mean', 'Mean'),
+        ('ttft_median', 'Median'),
+        ('ttft_p95', 'P95'),
+        ('ttft_p99', 'P99')
+    ]
+
+    for grp in groups:
+        grp_df = df[df[color_col] == grp]
+        for metric_col, metric_label in metrics:
+            y = []
+            for x in x_vals:
+                subset = grp_df[grp_df[x_field] == x]
+                if not subset.empty:
+                    y.append(subset[metric_col].mean())
+                else:
+                    y.append(None)
+
+            trace = go.Scatter(
+                x=x_vals,
+                y=y,
+                mode='lines+markers',
+                name=f"{grp} - {metric_label}",
+                # Escape braces so this f-string emits literal Plotly placeholders
+                hovertemplate=f"{metric_label}: %{{{{y:.2f}}}}<br>{x_label}: %{{{{x}}}}<extra>{grp}</extra>"
+            )
+            traces.append(trace)
+            trace_groups.append(grp)
+
+    fig = go.Figure(data=traces)
+
+    # Build dropdown buttons: one for 'All' and one per group
+    buttons = []
+    n_traces_per_group = len(metrics)
+    total_traces = len(traces)
+
+    # All button — show all traces
+    buttons.append(dict(
+        label='All',
+        method='update',
+        args=[{'visible': [True] * total_traces}, {'title': f'Combined TTFT - All Groups'}]
+    ))
+
+    # Per-group buttons
+    for i, grp in enumerate(groups):
+        vis = [False] * total_traces
+        start = i * n_traces_per_group
+        for j in range(n_traces_per_group):
+            vis[start + j] = True
+        buttons.append(dict(
+            label=str(grp),
+            method='update',
+            args=[{'visible': vis}, {'title': f'Combined TTFT - {grp}'}]
+        ))
+
+    fig.update_layout(
+        updatemenus=[dict(
+            active=0,
+            buttons=buttons,
+            x=0.0,
+            y=1.15,
+            xanchor='left',
+            yanchor='top'
+        )],
+        title=f'Combined TTFT - All Groups',
+        xaxis_title=x_label,
+        yaxis_title='TTFT (ms)',
+        template='plotly_white',
+        height=600,
+        legend=dict(orientation='h')
+    )
+
+    return fig.to_html(include_plotlyjs='cdn', div_id='combined-ttft-chart')
 
 
 def create_token_length_histograms(df: pd.DataFrame, token_col: str, color_col: str, 
