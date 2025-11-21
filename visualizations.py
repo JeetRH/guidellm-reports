@@ -390,20 +390,28 @@ def create_combined_ttft_line_chart(df: pd.DataFrame, color_col: str, axis_mode:
         ))
 
     fig.update_layout(
+        # Put the dropdown above the legend on the right side
         updatemenus=[dict(
             active=0,
             buttons=buttons,
-            x=0.0,
-            y=1.15,
+            x=1.02,
+            y=0.9,
             xanchor='left',
-            yanchor='top'
+            yanchor='top',
+            direction='down'
         )],
-        title=f'Combined TTFT - All Groups',
         xaxis_title=x_label,
         yaxis_title='TTFT (ms)',
         template='plotly_white',
         height=600,
-        legend=dict(orientation='h')
+        # Place the legend vertically on the right
+        legend=dict(
+            orientation='v',
+            x=1.02,
+            y=0.5,
+            xanchor='left'
+        ),
+        margin=dict(r=220)
     )
 
     return fig.to_html(include_plotlyjs='cdn', div_id='combined-ttft-chart')
