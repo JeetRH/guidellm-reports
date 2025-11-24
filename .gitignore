@@ -16,6 +16,9 @@ input/
 #  Output reports
 reports/
 
+#Multiple output reports
+multiple_files/
+
 # Distribution / packaging
 .Python
 build/
