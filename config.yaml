@@ -1,16 +1,16 @@
 data:
   - extra_metadata:
-      platform: 1xvllm
+      platform: vllm-x2
       GPU: H100
-      GPU_count: 1
+      GPU_count: 2
     files:
-      - input/benchmark-1xvllm.json
+      - input/benchmarks-vllm-x2-merged.json
   - extra_metadata:
-      platform: 2xvllm
+      platform: llmd-x2
       GPU: H100
-      GPU_count: 1
+      GPU_count: 2
     files:
-      - input/benchmark-2xvllm.json
+      - input/benchmarks-llmd-x2-merged.json
 options:
   color: platform
   axis_mode: concurrency
