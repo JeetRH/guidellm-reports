@@ -19,8 +19,10 @@ A tool for analyzing and visualizing benchmark results from GuideLLM tests. This
 
 ```bash
 cd guidellm-reports
-python generate-report.py config.yaml --output report.html
+python generate-report.py config.yaml --output reports/report.html
 ```
+
+> **Note**: Create a reports folder to store the output results. It has been added to the .gitignore file so that the results are not accidentally committed to git
 
 ### With Custom Title and Subtitle
 
@@ -31,7 +33,7 @@ python generate-report.py config.yaml \
     --output performance_report.html
 ```
 
-### Summary Only (faster, no deep dive)
+<!-- ### Summary Only (faster, no deep dive)
 
 ```bash
 python generate-report.py config.yaml --summary-only --output summary_report.html
@@ -41,33 +43,32 @@ python generate-report.py config.yaml --summary-only --output summary_report.htm
 
 ```bash
 python generate-report.py config.yaml --requests-only --output deep_dive_report.html
-```
+``` -->
 
 ## Configuration
 
-The tool uses YAML configuration files to specify data sources and analysis options:
+An example config.yaml file is as follows:
 
 ```yaml
 data:
   - extra_metadata:
-      platform: RHOAI
+      platform: vllm-x2
       GPU: H100
-      GPU_count: 16
+      GPU_count: 2
     files:
-      - "../results/RHOAI/*-1000-1000-sweep.json"
+      - input/benchmarks-vllm-x2-merged.json
   - extra_metadata:
-      platform: llm-d
-      GPU: H100  
-      GPU_count: 16
+      platform: llmd-x2
+      GPU: H100
+      GPU_count: 2
     files:
-      - "../results/llm-d/*-1000-1000-sweep.json"
-
+      - input/benchmarks-llmd-x2-merged.json
 options:
   color: platform
-  axis_mode: concurrency  # or 'rps'
-  concurrency_levels: [1, 2, 4, 8, 16]  # optional filtering
-  # rps_levels: [10, 50, 100]  # alternative for RPS mode
+  axis_mode: concurrency
 ```
+
+> **Note**: Create a input folder to store the benchmark json files. It has been added to the .gitignore file so that they are not accidentally committed to git
 
 ### Configuration Options
 
@@ -100,6 +101,7 @@ The generated HTML report contains the following tabs:
 7. **TTFT Deep Dive**: Histograms showing TTFT distribution for each configuration
 8. **ITL Deep Dive**: Histograms showing ITL distribution for each configuration
 9. **Request Scheduling**: Request start/end rates and TTFT timeline analysis
+10. **Combined TTFT**: Gives the ability to view the Mean, Median, P95 and P99 in a single graph
 
 ## Requirements
 
@@ -113,7 +115,7 @@ The generated HTML report contains the following tabs:
 Install dependencies:
 
 ```bash
-pip install pandas plotly jinja2 pyyaml numpy
+pip install -r requirements.txt
 ```
 
 ## Architecture
@@ -128,3 +130,12 @@ The tool is organized into modular components:
 - `template.html`: Minimal monospace HTML template
 
 This modular design makes it easy to extend with new chart types, modify styling, or integrate into other workflows.
+
+## Tools
+
+If there are multiple test files, the compile_benchmark_files.py file can be used to combine them into a single benchmarks file that can be used in the config.yaml file
+
+```bash
+python tools/compile_benchmark_files.py -i multiple_files/vllm-x2 -o input/benchmarks-vllm-x2-merged.json
+```
+> **Note**: Create a folder named multiple_files and add the folder with the multiple result files in that folder (vllm-x2 in this case). the multiple_files folder has been added to the .gitignore file so that they are not accidentally committed to git
