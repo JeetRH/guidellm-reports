@@ -11,6 +11,18 @@ data:
       GPU_count: 4
     files:
       - input/benchmarks-llmd-x4-merged.json
+  # - extra_metadata:
+  #     platform: vllm-x2
+  #     GPU: H100
+  #     GPU_count: 2
+  #   files:
+  #     - input/benchmarks-vllm-x2-merged.json
+  # - extra_metadata:
+  #     platform: llmd-x2
+  #     GPU: H100
+  #     GPU_count: 2
+  #   files:
+  #     - input/benchmarks-llmd-x2-merged.json
 options:
   color: platform
   axis_mode: concurrency

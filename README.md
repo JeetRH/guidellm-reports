@@ -29,7 +29,7 @@ python generate-report.py config.yaml --output reports/report.html
 ```bash
 python generate-report.py config.yaml \
     --title "H100 Performance Analysis" \
-    --subtitle "Comparing RHOAI vs llm-d platforms" \
+    --subtitle "Comparing vllm vs llm-d platforms" \
     --output performance_report.html
 ```
 
