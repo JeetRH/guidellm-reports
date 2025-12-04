@@ -701,7 +701,7 @@ def create_ttft_timeline_chart(df: pd.DataFrame, color_col: str, level_field: st
         )
         
         chart_id = f"ttft-timeline-{str(level).replace('.', '_')}"
-        chart_html = fig.to_html(include_plotlyjs='cdn', div_id=chart_id)
+        chart_html = fig.to_html(include_plotlyjs=True, div_id=chart_id)
         html_parts.append(f'<div style="margin-bottom: 30px;">{chart_html}</div>')
     
     if not html_parts:
