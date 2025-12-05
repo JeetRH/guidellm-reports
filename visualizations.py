@@ -63,6 +63,7 @@ def create_throughput_chart(df: pd.DataFrame, color_col: str, axis_mode: str) ->
         barmode='group'
     )
     
+    # include_plotlyjs=True for air gapped environments
     return fig.to_html(include_plotlyjs='cdn', div_id="throughput-chart")
 
 
@@ -131,6 +132,7 @@ def create_total_throughput_chart(df: pd.DataFrame, color_col: str, axis_mode: s
         barmode='group'
     )
 
+    # include_plotlyjs=True for air gapped environments
     return fig.to_html(include_plotlyjs='cdn', div_id="total-throughput-chart")
 
 
@@ -196,6 +198,7 @@ def create_latency_chart(df: pd.DataFrame, metric_col: str, color_col: str, axis
     )
     
     chart_id = metric_col.replace('_', '-') + '-chart'
+    # include_plotlyjs=True for air gapped environments
     return fig.to_html(include_plotlyjs='cdn', div_id=chart_id)
 
 
@@ -288,6 +291,7 @@ def create_histogram_deep_dive(df: pd.DataFrame, metric_col: str, color_col: str
         )
         
         chart_id = f"{title_prefix.lower()}-{str(level).replace('.', '_')}-{str(group).replace(' ', '-')}"
+        # include_plotlyjs=True for air gapped environments
         chart_html = fig.to_html(include_plotlyjs='cdn', div_id=chart_id)
         html_parts.append(f'<div style="margin-bottom: 30px;">{chart_html}</div>')
     
@@ -414,6 +418,7 @@ def create_combined_ttft_line_chart(df: pd.DataFrame, color_col: str, axis_mode:
         margin=dict(r=220)
     )
 
+    # include_plotlyjs=True for air gapped environments
     return fig.to_html(include_plotlyjs='cdn', div_id='combined-ttft-chart')
 
 
@@ -502,6 +507,7 @@ def create_token_length_histograms(df: pd.DataFrame, token_col: str, color_col: 
         )
         
         chart_id = f"{title_prefix.lower().replace(' ', '-')}-{str(level).replace('.', '_')}-{str(group).replace(' ', '-')}"
+        # include_plotlyjs=True for air gapped environments
         chart_html = fig.to_html(include_plotlyjs='cdn', div_id=chart_id)
         html_parts.append(f'<div style="margin-bottom: 30px;">{chart_html}</div>')
     
@@ -631,6 +637,7 @@ def create_request_rate_chart(df: pd.DataFrame, time_col: str, title: str,
         )
         
         chart_id = f"{title.lower().replace(' ', '-').replace('/', '-')}-{str(level).replace('.', '_')}"
+        # include_plotlyjs=True for air gapped environments
         chart_html = fig.to_html(include_plotlyjs='cdn', div_id=chart_id)
         html_parts.append(f'<div style="margin-bottom: 30px;">{chart_html}</div>')
     
@@ -701,7 +708,8 @@ def create_ttft_timeline_chart(df: pd.DataFrame, color_col: str, level_field: st
         )
         
         chart_id = f"ttft-timeline-{str(level).replace('.', '_')}"
-        chart_html = fig.to_html(include_plotlyjs=True, div_id=chart_id)
+        # include_plotlyjs=True for air gapped environments
+        chart_html = fig.to_html(include_plotlyjs='cdn', div_id=chart_id)
         html_parts.append(f'<div style="margin-bottom: 30px;">{chart_html}</div>')
     
     if not html_parts:
